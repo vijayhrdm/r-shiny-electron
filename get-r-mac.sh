@@ -5,14 +5,14 @@ set -e
 # Requires xar and cpio, both installed in the Dockerfile
 mkdir -p r-mac
 curl -o r-mac/latest_r.pkg \
-     https://cloud.r-project.org/bin/macosx/R-3.5.1.pkg
+     https://cloud.r-project.org/bin/macosx/base/R-4.1.0.pkg
 
 cd r-mac
 xar -xf latest_r.pkg
-rm -r r-1.pkg Resources tcltk8.pkg texinfo5.pkg Distribution latest_r.pkg
-cat r.pkg/Payload | gunzip -dc | cpio -i
-mv R.framework/Versions/Current/Resources/* .
-rm -r r.pkg R.framework
+rm -r R-app.pkg Resources tcltk.pkg texinfo.pkg Distribution latest_r.pkg #Remove the downloaded package file as well as all unneccessary files after extraction.
+cat R-fw.pkg/Payload | gunzip -dc | cpio -i # Take the contents of R-fw.pkg/Payload directory, pass is to gunzip and then to cpio to extract it as a folder
+mv R.framework/Versions/Current/Resources/* . # move all extracted files to the current place and then delete the R-fw.pkg and R.framework files
+rm -r R-fw.pkg R.framework
 
 # Patch the main R script
 sed -i.bak '/^R_HOME_DIR=/d' bin/R
